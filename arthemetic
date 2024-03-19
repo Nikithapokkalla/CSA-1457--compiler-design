@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <ctype.h>
+bool expr(const char* input, int* index);
+bool term(const char* input, int* index);
+bool factor(const char* input, int* index);
+bool match(const char* input, int* index, char expected);
+
+bool match(const char* input, int* index, char expected) {
+    if (input[*index] == expected) {
+        (*index)++;
+        return true;
+    }
+    return false;
+}
+bool expr(const char* input, int* index) {
+    if (term(input, index)) {
+        while (input[*index] == '+' || input[*index] == '-') {
+            char op = input[*index];
+            (*index)++;
+            if (!term(input, index)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+bool term(const char* input, int* index) {
+    if (factor(input, index)) {
+        while (input[*index] == '*' || input[*index] == '/') {
+            char op = input[*index];
+            (*index)++;
+            if (!factor(input, index)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+bool factor(const char* input, int* index) {
+    if (isdigit(input[*index])) {
+        (*index)++;
+        return true;
+    } else if (input[*index] == '(') {
+        (*index)++;
+        if (expr(input, index) && input[*index] == ')') {
+            (*index)++;
+            return true;
+        }
+    }
+    return false;
+}
+int main() {
+    char input[100];
+    printf("Enter an arithmetic expression: ");
+    scanf("%s", input);
+
+    int index = 0;
+    if (expr(input, &index) && input[index] == '\0') {
+        printf("Valid expression!\n");
+    } else {
+        printf("Invalid expression!\n");
+    }
+
+    return 0;
+}
