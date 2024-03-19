@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+struct SymbolEntry {
+    char name[50];
+    int value;
+    struct SymbolEntry* next;
+};
+struct SymbolEntry* createEntry(const char* name, int value) {
+    struct SymbolEntry* newEntry = (struct SymbolEntry*)malloc(sizeof(struct SymbolEntry));
+    if (newEntry == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(1);
+    }
+    strncpy(newEntry->name, name, sizeof(newEntry->name));
+    newEntry->value = value;
+    newEntry->next = NULL;
+    return newEntry;
+}
+void insertEntry(struct SymbolEntry** symbolTable, const char* name, int value) {
+    struct SymbolEntry* newEntry = createEntry(name, value);
+    newEntry->next = *symbolTable;
+    *symbolTable = newEntry;
+    printf("Inserted: %s\n", name);
+}
+struct SymbolEntry* searchEntry(struct SymbolEntry* symbolTable, const char* name) {
+    struct SymbolEntry* current = symbolTable;
+    while (current != NULL) {
+        if (strcmp(current->name, name) == 0) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+void deleteEntry(struct SymbolEntry** symbolTable, const char* name) {
+    struct SymbolEntry *prev = NULL, *current = *symbolTable;
+    while (current != NULL) {
+        if (strcmp(current->name, name) == 0) {
+            if (prev != NULL) {
+                prev->next = current->next;
+            } else {
+                *symbolTable = current->next;
+            }
+            free(current);
+            printf("Deleted: %s\n", name);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    }
+    printf("Symbol not found: %s\n", name);
+}
+void printSymbolTable(struct SymbolEntry* symbolTable) {
+    printf("Symbol Table:\n");
+    struct SymbolEntry* current = symbolTable;
+    while (current != NULL) {
+        printf("%s: %d\n", current->name, current->value);
+        current = current->next;
+    }
+}
+
+int main() {
+    struct SymbolEntry* symbolTable = NULL;
+    insertEntry(&symbolTable, "x", 10);
+    insertEntry(&symbolTable, "y", 20);
+    insertEntry(&symbolTable, "z", 30);
+    printSymbolTable(symbolTable);
+    struct SymbolEntry* entry = searchEntry(symbolTable, "y");
+    if (entry != NULL) {
+        printf("Found: %s = %d\n", entry->name, entry->value);
+    } else {
+        printf("Symbol not found\n");
+    }
+    deleteEntry(&symbolTable, "y");
+    printSymbolTable(symbolTable);
+    
+    return 0;
+}
