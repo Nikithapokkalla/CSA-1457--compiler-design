@@ -1,0 +1,42 @@
+#include<stdio.h>
+#include<string.h>
+#define SIZE 10
+int main() {
+    char non_terminal;
+    char production[SIZE];
+    int num;
+
+    printf("Enter Number of Production: ");
+    scanf("%d", &num);
+    printf("Enter the grammar as E->aAbB|aC:\n");
+    
+    char productions[num][SIZE];
+    for (int i = 0; i < num; i++) {
+        scanf("%s", productions[i]);
+    }
+
+    printf("\nGrammar after eliminating left factoring:\n");
+
+    for (int i = 0; i < num; i++) {
+        non_terminal = productions[i][0];
+        int j = 3;
+        int match_len = 0;
+
+        while (productions[i][j] != '|' && productions[i][j] != '\0') {
+            if (productions[i][j] == productions[i - 1][j]) {
+                match_len++;
+            } else {
+                break;
+            }
+            j++;
+        }
+
+        if (match_len > 0) {
+            printf("%c->%.*s%c'\n", non_terminal, match_len, &productions[i][3], non_terminal);
+            printf("%c'->%s\n", non_terminal, &productions[i][3 + match_len]);
+        } else {
+            printf("%s\n", productions[i]);
+        }
+    }
+    return 0;
+}
