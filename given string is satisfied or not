@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <stdbool.h>
+#include <string.h>
+
+bool checkGrammar(const char* input) {
+    if (strlen(input) == 0) {
+        return false;
+    }
+    if (!isupper(input[0])) {
+        return false;
+    }
+    for (int i = 1; i < strlen(input); i++) {
+        if (!islower(input[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+int main() {
+    char input[100];
+    printf("Enter a string: ");
+    scanf("%s", input);
+    if (checkGrammar(input)) {
+        printf("Input string satisfies the grammar.\n");
+    } else {
+        printf("Input string does not satisfy the grammar.\n");
+    }
+
+    return 0;
+}
